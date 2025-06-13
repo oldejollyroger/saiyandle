@@ -1,0 +1,115 @@
+/* win-modal.css */
+.win-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(26, 32, 44, 0.8); /* dark background with more opacity */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.win-modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.win-modal {
+    font-family: 'Inter', sans-serif;
+    background-color: #2d3748;
+    color: #e2e8f0;
+    padding: 2.5rem;
+    border-radius: 1rem;
+    border: 1px solid #4a5568;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    transform: scale(0.95) translateY(10px);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.win-modal-overlay.visible .win-modal {
+    transform: scale(1) translateY(0);
+}
+
+.win-title {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    color: #f97316; /* Orange accent */
+}
+
+.win-char-image {
+    width: 128px; /* 8rem */
+    height: 128px;
+    object-fit: cover;
+    border-radius: 50%; /* Circular image */
+    border: 4px solid #f97316;
+    margin: 1rem auto;
+    background-color: #4a5568;
+}
+
+.win-char-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.win-tries-text {
+    font-size: 1rem;
+    color: #a0aec0;
+    margin-bottom: 2rem;
+}
+
+.win-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.win-share-button,
+.win-close-button {
+    font-weight: bold;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.win-share-button:hover,
+.win-close-button:hover {
+    transform: scale(1.05);
+}
+
+.win-share-button {
+    background-color: #38a169; /* Green */
+    color: white;
+}
+
+.win-close-button {
+    background-color: #4a5568;
+    color: #e2e8f0;
+}
+
+/* Light Mode for Win Modal */
+body.light-mode .win-modal {
+    background-color: #ffffff;
+    color: #1a202c;
+    border-color: #e2e8f0;
+}
+body.light-mode .win-char-image {
+    background-color: #e2e8f0;
+}
+body.light-mode .win-tries-text {
+    color: #718096;
+}
+body.light-mode .win-close-button {
+    background-color: #e2e8f0;
+    color: #2d3748;
+}
