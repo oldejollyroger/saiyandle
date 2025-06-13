@@ -559,4 +559,8 @@ function initialize() {
     shareButtonEl.addEventListener('click', handleShare);
 }
 
+<<<<<<< HEAD
 document.addEventListener('DOMContentLoaded', initialize);
+=======
+document.addEventListener('DOMContentLoaded', initialize);
+>>>>>>> 0d27aac (Move all files to root directory for GitHub Pages)
