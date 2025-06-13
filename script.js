@@ -2,7 +2,7 @@
 
 // --- CONSTANTS & DATA ---
 const CHALLENGE_MAX_GUESSES = 10;
-const propertiesToCompare = ["gender", "hair_color", "race", "origin_planet", "series", "debut_year"];
+const propertiesToCompare = ["gender", "hair_color", "race", "origin_planet", "series", "debut_saga", "debut_year"];
 
 // --- Game State ---
 let secretCharacter;
@@ -19,9 +19,9 @@ let stats;
 
 // --- UI STRINGS ---
 const uiStrings = {
-    es: { pageTitle: "Saiyandle", headerSubtitle: "Adivina el personaje secreto de Dragon Ball.", guessLabel: "Elige un personaje:", guessPlaceholder: "Escribe un nombre...", guessButton: "Adivinar", notFoundMessage: "Por favor, selecciona un personaje válido de la lista.", winMessage: "¡Correcto!", dailyChallengeCompleted: "¡Desafío diario completado!", playAgainButton: "Jugar de Nuevo", footerText: "© 2024 Saiyandle. Inspirado en Wordle.", tooltipToLight: "Cambiar a modo claro", tooltipToDark: "Cambiar a modo oscuro", modeDaily: "Modo Diario", modeInfinite: "Modo Infinito", nextChallengeIn: "Próximo desafío en:", tooltipStats: "Estadísticas", statsTitle: "Estadísticas", statsPlayed: "Jugadas", statsWinPercentage: "% Victorias", statsCurrentStreak: "Racha Actual", statsMaxStreak: "Mejor Racha", statsDistribution: "Distribución de Adivinanzas", shareButton: "Compartir", copied: "¡Copiado!", loseMessage: "¡No has acertado!", attemptsRemaining: "Intentos restantes:", difficultyNormal: "Normal", difficultyChallenge: "Desafío", winTitle: "¡Felicidades!", winTriesText: "Lo adivinaste en {tries} intentos.", closeButton: "Cerrar" },
-    en: { pageTitle: "Saiyandle", headerSubtitle: "Guess the secret Dragon Ball character.", guessLabel: "Choose a character:", guessPlaceholder: "Type a name...", guessButton: "Guess", notFoundMessage: "Please select a valid character from the list.", winMessage: "Correct!", dailyChallengeCompleted: "Daily challenge completed!", playAgainButton: "Play Again", footerText: "© 2024 Saiyandle. Inspired by Wordle.", tooltipToLight: "Switch to light mode", tooltipToDark: "Switch to dark mode", modeDaily: "Daily Mode", modeInfinite: "Infinite Mode", nextChallengeIn: "Next challenge in:", tooltipStats: "Statistics", statsTitle: "Statistics", statsPlayed: "Played", statsWinPercentage: "Win %", statsCurrentStreak: "Current Streak", statsMaxStreak: "Max Streak", statsDistribution: "Guess Distribution", shareButton: "Share", copied: "Copied!", loseMessage: "You didn't guess it!", attemptsRemaining: "Attempts remaining:", difficultyNormal: "Normal", difficultyChallenge: "Challenge", winTitle: "Congratulations!", winTriesText: "You guessed it in {tries} tries.", closeButton: "Close" },
-    ca: { pageTitle: "Saiyandle", headerSubtitle: "Endevina el personatge secret de Dragon Ball.", guessLabel: "Tria un personatge:", guessPlaceholder: "Escriu un nom...", guessButton: "Endevina", notFoundMessage: "Si us plau, selecciona un personatge vàlid de la llista.", winMessage: "Correcte!", dailyChallengeCompleted: "Repte diari completat!", playAgainButton: "Juga de Nou", footerText: "© 2024 Saiyandle. Inspirat en Wordle.", tooltipToLight: "Canvia a mode clar", tooltipToDark: "Canvia a mode fosc", modeDaily: "Mode Diari", modeInfinite: "Mode Infinit", nextChallengeIn: "Pròxim repte en:", tooltipStats: "Estadístiques", statsTitle: "Estadístiques", statsPlayed: "Jugades", statsWinPercentage: "% Victòries", statsCurrentStreak: "Ratxa Actual", statsMaxStreak: "Millor Ratxa", statsDistribution: "Distribució d'Endevinalles", shareButton: "Compartir", copiat: "Copiat!", loseMessage: "No ho has encertat!", attemptsRemaining: "Intents restants:", difficultyNormal: "Normal", difficultyChallenge: "Desafío", winTitle: "Felicitats!", winTriesText: "Ho has endevinat en {tries} intents.", closeButton: "Tancar" }
+    es: { pageTitle: "Saiyandle", headerSubtitle: "Adivina el personaje secreto de Dragon Ball.", guessLabel: "Elige un personaje:", guessPlaceholder: "Escribe un nombre...", guessButton: "Adivinar", notFoundMessage: "Por favor, selecciona un personaje válido de la lista.", winMessage: "¡Correcto!", dailyChallengeCompleted: "¡Desafío diario completado!", playAgainButton: "Jugar de Nuevo", footerText: "© 2024 Saiyandle. Inspirado en Wordle.", tooltipToLight: "Cambiar a modo claro", tooltipToDark: "Cambiar a modo oscuro", modeDaily: "Modo Diario", modeInfinite: "Modo Infinito", nextChallengeIn: "Próximo desafío en:", tooltipStats: "Estadísticas", statsTitle: "Estadísticas", statsPlayed: "Jugadas", statsWinPercentage: "% Victorias", statsCurrentStreak: "Racha Actual", statsMaxStreak: "Mejor Racha", statsDistribution: "Distribución de Adivinanzas", shareButton: "Compartir", copied: "¡Copiado!", loseMessage: "¡No has acertado!", attemptsRemaining: "Intentos restantes:", difficultyNormal: "Normal", difficultyChallenge: "Desafío", winTitle: "¡Felicidades!", winTriesText: "Lo adivinaste en {tries} intentos.", closeButton: "Cerrar", thImage: "Imagen", thCharacter: "Personaje", thGender: "Género", thHairColor: "Color de Pelo", thRace: "Raza", thOriginPlanet: "Planeta de Origen", thSeries: "Serie", thDebutSaga: "Saga de Debut", thDebutYear: "Año de Debut" },
+    en: { pageTitle: "Saiyandle", headerSubtitle: "Guess the secret Dragon Ball character.", guessLabel: "Choose a character:", guessPlaceholder: "Type a name...", guessButton: "Guess", notFoundMessage: "Please select a valid character from the list.", winMessage: "Correct!", dailyChallengeCompleted: "Daily challenge completed!", playAgainButton: "Play Again", footerText: "© 2024 Saiyandle. Inspired by Wordle.", tooltipToLight: "Switch to light mode", tooltipToDark: "Switch to dark mode", modeDaily: "Daily Mode", modeInfinite: "Infinite Mode", nextChallengeIn: "Next challenge in:", tooltipStats: "Statistics", statsTitle: "Statistics", statsPlayed: "Played", statsWinPercentage: "Win %", statsCurrentStreak: "Current Streak", statsMaxStreak: "Max Streak", statsDistribution: "Guess Distribution", shareButton: "Share", copied: "Copied!", loseMessage: "You didn't guess it!", attemptsRemaining: "Attempts remaining:", difficultyNormal: "Normal", difficultyChallenge: "Challenge", winTitle: "Congratulations!", winTriesText: "You guessed it in {tries} tries.", closeButton: "Close", thImage: "Image", thCharacter: "Character", thGender: "Gender", thHairColor: "Hair Color", thRace: "Race", thOriginPlanet: "Origin Planet", thSeries: "Series", thDebutSaga: "Debut Saga", thDebutYear: "Debut Year" },
+    ca: { pageTitle: "Saiyandle", headerSubtitle: "Endevina el personatge secret de Dragon Ball.", guessLabel: "Tria un personatge:", guessPlaceholder: "Escriu un nom...", guessButton: "Endevina", notFoundMessage: "Si us plau, selecciona un personatge vàlid de la llista.", winMessage: "Correcte!", dailyChallengeCompleted: "Repte diari completat!", playAgainButton: "Juga de Nou", footerText: "© 2024 Saiyandle. Inspirat en Wordle.", tooltipToLight: "Canvia a mode clar", tooltipToDark: "Canvia a mode fosc", modeDaily: "Mode Diari", modeInfinite: "Mode Infinit", nextChallengeIn: "Pròxim repte en:", tooltipStats: "Estadístiques", statsTitle: "Estadístiques", statsPlayed: "Jugades", statsWinPercentage: "% Victòries", statsCurrentStreak: "Ratxa Actual", statsMaxStreak: "Millor Ratxa", statsDistribution: "Distribució d'Endevinalles", shareButton: "Compartir", copiat: "Copiat!", loseMessage: "No ho has encertat!", attemptsRemaining: "Intents restants:", difficultyNormal: "Normal", difficultyChallenge: "Desafío", winTitle: "Felicitats!", winTriesText: "Ho has endevinat en {tries} intents.", closeButton: "Tancar", thImage: "Imatge", thCharacter: "Personatge", thGender: "Gènere", thHairColor: "Color de Cabell", thRace: "Raça", thOriginPlanet: "Planeta d'Origen", thSeries: "Sèrie", thDebutSaga: "Saga de Debut", thDebutYear: "Any de Debut" }
 };
 
 // --- DOM Elements ---
@@ -178,7 +178,20 @@ function showFinalMessage(messageKey, character, isWin) {
 function appendGuessToTable(guessedChar, currentSecretChar) {
     const guessRow = document.createElement('tr');
     const cells = [];
+    const headers = [
+        uiStrings[currentLanguage].thImage,
+        uiStrings[currentLanguage].thCharacter,
+        uiStrings[currentLanguage].thGender,
+        uiStrings[currentLanguage].thHairColor,
+        uiStrings[currentLanguage].thRace,
+        uiStrings[currentLanguage].thOriginPlanet,
+        uiStrings[currentLanguage].thSeries,
+        uiStrings[currentLanguage].thDebutSaga,
+        uiStrings[currentLanguage].thDebutYear,
+    ];
+
     const imageCell = document.createElement('td');
+    imageCell.setAttribute('data-label', headers[0]);
     const imgElement = document.createElement('img');
     imgElement.src = guessedChar.image_url;
     imgElement.alt = guessedChar.name[currentLanguage] || guessedChar.name.es;
@@ -187,15 +200,20 @@ function appendGuessToTable(guessedChar, currentSecretChar) {
     imageCell.appendChild(imgElement);
     guessRow.appendChild(imageCell);
     cells.push(imageCell);
+    
     const nameCell = document.createElement('td');
+    nameCell.setAttribute('data-label', headers[1]);
     nameCell.textContent = guessedChar.name[currentLanguage] || guessedChar.name.es;
     guessRow.appendChild(nameCell);
     cells.push(nameCell);
 
-    propertiesToCompare.forEach(propKey => {
+    propertiesToCompare.forEach((propKey, index) => {
         const cell = document.createElement('td');
-        const guessedValue = (propKey === 'debut_year') ? (guessedChar.debut_year || 'N/A') : (guessedChar[propKey]?.[currentLanguage] || 'N/A');
-        const secretValue = (propKey === 'debut_year') ? (currentSecretChar.debut_year || 'N/A') : (currentSecretChar[propKey]?.[currentLanguage] || 'N/A');
+        cell.setAttribute('data-label', headers[index + 2]);
+        
+        const guessedValue = (propKey === 'debut_year') 
+            ? (guessedChar.debut_year || 'N/A') 
+            : (guessedChar[propKey]?.[currentLanguage] || guessedChar[propKey]?.es || 'N/A');
         
         cell.innerHTML = guessedValue;
         cell.classList.add('neutral-text');
@@ -203,35 +221,32 @@ function appendGuessToTable(guessedChar, currentSecretChar) {
         let resultClass = 'incorrect-cell';
         let arrow = "";
 
-        if (propKey !== 'debut_year') {
+        if (propKey === 'debut_year') {
+            const secretValue = currentSecretChar.debut_year || 'N/A';
+            if (guessedValue !== 'N/A' && secretValue !== 'N/A') {
+                if (guessedValue === secretValue) {
+                    resultClass = 'correct-cell';
+                } else if (Math.abs(guessedValue - secretValue) <= 5) {
+                    resultClass = 'partial-cell';
+                }
+                if (secretValue > guessedValue) arrow = ` <span class='arrow-indicator'>▲</span>`;
+                else if (secretValue < guessedValue) arrow = ` <span class='arrow-indicator'>▼</span>`;
+                cell.innerHTML += arrow;
+            }
+        } else {
             const comparisonGuessed = guessedChar[propKey]?.es || 'N/A_es';
             const comparisonSecret = currentSecretChar[propKey]?.es || 'N/A_es';
             if (comparisonGuessed.toLowerCase() === comparisonSecret.toLowerCase()) {
                 resultClass = 'correct-cell';
             }
-        } else {
-            if (guessedValue === 'N/A' || secretValue === 'N/A') {
-                resultClass = 'incorrect-cell';
-            } else if (guessedValue === secretValue) {
-                resultClass = 'correct-cell';
-            } else if (Math.abs(guessedValue - secretValue) <= 5) {
-                resultClass = 'partial-cell';
-            }
-            if (secretValue > guessedValue) {
-                arrow = ` <span class='arrow-indicator'>▲</span>`;
-            } else if (secretValue < guessedValue) {
-                arrow = ` <span class='arrow-indicator'>▼</span>`;
-            }
-            cell.innerHTML += arrow;
         }
-
+        
         cell.dataset.resultClass = resultClass;
         guessRow.appendChild(cell);
         cells.push(cell);
     });
 
-    guessesTbody.prepend(guessRow); // This line ensures the new guess is at the top
-
+    guessesTbody.prepend(guessRow);
     setTimeout(() => {
         cells.forEach(cell => {
             if (cell.dataset.resultClass) {
@@ -425,10 +440,13 @@ function endGame(isWin, showAnimation) {
         showFinalMessage(messageKey, secretCharacter, isWin);
         playAgainButtonEl.style.display = currentGameMode === 'infinite' ? 'flex' : 'none';
         postGameContainer.style.display = 'flex';
+        if (isWin) {
+            showWinModal();
+        }
     };
 
     if (showAnimation) {
-        setTimeout(displayLogic, 800);
+        setTimeout(displayLogic, 1200);
     } else {
         displayLogic();
     }
