@@ -3,19 +3,10 @@
 // --- CONSTANTS & DATA ---
 const CHALLENGE_MAX_GUESSES = 10;
 const propertiesToCompare = ["gender", "hair_color", "race", "origin_planet", "series", "debut_saga", "debut_year"];
+const sagasOrder = [ "Saga de Pilaf", "Saga del 21º Torneo Mundial", "Saga de la Red Ribbon", "Saga del 22º Torneo Mundial", "Saga de Piccolo Daimaō", "Saga de Piccolo Jr.", "Saga Saiyan", "Saga de Namek", "Saga de Garlic Jr.", "Saga de los Androides", "Saga de Cell", "Película: El Último Combate", "Película: El Árbol del Poder", "Película: El Super Guerrero Son Goku", "Película: Los Rivales Más Poderosos", "Película: Guerreros de Fuerza Ilimitada", "Película: El Poder Invencible", "Película: Los Guerreros de Plata", "Saga de Majin Buu", "Película: ¡El Renacer de la Fusión! Goku y Vegeta", "Película: El Ataque del Dragón", "Saga del Fin de Z", "Saga de las Bolas de Dragón Negras", "Saga de Baby", "Saga de Super Androide 17", "Saga de los Dragones Oscuros", "Saga de la Batalla de los Dioses", "Saga de la Resurrección de Freezer", "Saga del Universo 6", "Saga de Trunks del Futuro (Super)", "Saga de Supervivencia Universal", "Película: Dragon Ball Super: Broly" ];
 
 // --- Game State ---
-let secretCharacter;
-let gameOver;
-let guessesMade;
-let gameStarted = false;
-let currentLanguage = 'es';
-let currentTheme = 'dark-mode';
-let currentGameMode = 'infinite';
-let currentDifficulty = 'normal';
-let countdownInterval;
-let selectedCharacterForGuess = null;
-let stats; 
+let secretCharacter; let gameOver; let guessesMade; let gameStarted = false; let currentLanguage = 'es'; let currentTheme = 'dark-mode'; let currentGameMode = 'infinite'; let currentDifficulty = 'normal'; let countdownInterval; let selectedCharacterForGuess = null; let stats; 
 
 // --- UI STRINGS ---
 const uiStrings = {
@@ -48,11 +39,9 @@ const shareButtonEl = document.getElementById('shareButton');
 const statsButton = document.getElementById('stats-button');
 const statsModalOverlay = document.getElementById('stats-modal-overlay');
 const statsCloseButton = document.getElementById('stats-close-button');
-const statsPlayedEl = document.getElementById('stats-played');
-const statsWinPercentageEl = document.getElementById('stats-win-percentage');
-const statsCurrentStreakEl = document.getElementById('stats-current-streak');
-const statsMaxStreakEl = document.getElementById('stats-max-streak');
-const statsDistributionContainer = document.getElementById('stats-distribution-container');
+const winModalOverlay = document.getElementById('win-modal-overlay');
+const winCloseButton = document.getElementById('win-close-button');
+const winShareButton = document.getElementById('win-share-button');
 
 // --- Statistics and Daily State Logic ---
 function loadStats() {
@@ -66,7 +55,7 @@ function saveStats() {
     localStorage.setItem('saiyandleDailyStats', JSON.stringify(stats));
 }
 function updateStats(isWin, guessCount) {
-    if (currentGameMode !== 'daily') return;
+    if (currentGameMode !== 'daily' || currentDifficulty !== 'challenge') return;
     stats.gamesPlayed++;
     if (isWin) {
         stats.wins++;
@@ -79,23 +68,25 @@ function updateStats(isWin, guessCount) {
     saveStats();
 }
 function getUTCDateString(date) { return date.toISOString().split('T')[0]; }
-function getCharacterForDate(date) {
+function getCharacterForDate(date, difficulty) {
     const epoch = new Date(Date.UTC(2024, 0, 1));
     const todayUTC = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
-    const diffTime = Math.abs(todayUTC - epoch);
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    let diffDays = Math.floor((todayUTC - epoch) / (1000 * 60 * 60 * 24));
+    if (difficulty === 'challenge') diffDays += 1000;
     return dbCharacters[diffDays % dbCharacters.length];
 }
 function loadDailyState() {
-    const savedState = JSON.parse(localStorage.getItem('saiyandleDailyState'));
+    const stateKey = `saiyandleDailyState_${currentDifficulty}`;
+    const savedState = JSON.parse(localStorage.getItem(stateKey));
     const todayStr = getUTCDateString(new Date());
     if (savedState && savedState.date === todayStr) {
         return savedState;
     }
-    return { date: todayStr, characterId: getCharacterForDate(new Date()).id, guesses: [], won: false, gameOver: false };
+    return { date: todayStr, characterId: getCharacterForDate(new Date(), currentDifficulty).id, guesses: [], won: false, gameOver: false };
 }
 function saveDailyState(state) {
-    localStorage.setItem('saiyandleDailyState', JSON.stringify(state));
+    const stateKey = `saiyandleDailyState_${currentDifficulty}`;
+    localStorage.setItem(stateKey, JSON.stringify(state));
 }
 
 // --- UI & Display Functions ---
@@ -107,6 +98,11 @@ function hideStatsModal() {
     statsModalOverlay.classList.remove('visible');
 }
 function displayStats() {
+    const statsPlayedEl = document.getElementById('stats-played');
+    const statsWinPercentageEl = document.getElementById('stats-win-percentage');
+    const statsCurrentStreakEl = document.getElementById('stats-current-streak');
+    const statsMaxStreakEl = document.getElementById('stats-max-streak');
+    const statsDistributionContainer = document.getElementById('stats-distribution-container');
     statsPlayedEl.textContent = stats.gamesPlayed;
     statsWinPercentageEl.textContent = stats.gamesPlayed > 0 ? Math.round((stats.wins / stats.gamesPlayed) * 100) : 0;
     statsCurrentStreakEl.textContent = stats.currentStreak;
@@ -120,15 +116,47 @@ function displayStats() {
         const barContainer = document.createElement('div'); barContainer.className = 'distribution-bar-container';
         const label = document.createElement('div'); label.className = 'distribution-label'; label.textContent = i;
         const bar = document.createElement('div'); bar.className = 'distribution-bar'; bar.style.width = `${Math.max(percentage, 5)}%`; bar.textContent = count;
-        
         const dailyState = loadDailyState();
         if (dailyState.gameOver && dailyState.won && i === dailyState.guesses.length) {
             bar.classList.add('highlight');
         }
-
         barContainer.append(label, bar);
         statsDistributionContainer.appendChild(barContainer);
     }
+}
+function showWinModal() {
+    document.getElementById('win-char-image').src = secretCharacter.image_url;
+    document.getElementById('win-char-name').textContent = secretCharacter.name[currentLanguage] || secretCharacter.name.es;
+    document.getElementById('win-tries-text').textContent = uiStrings[currentLanguage].winTriesText.replace('{tries}', guessesMade);
+    document.getElementById('win-title').textContent = uiStrings[currentLanguage].winTitle;
+    document.getElementById('win-share-button').textContent = uiStrings[currentLanguage].shareButton;
+    document.getElementById('win-close-button').textContent = uiStrings[currentLanguage].closeButton;
+
+    const gridContainer = document.getElementById('win-grid-container');
+    gridContainer.innerHTML = '';
+    const guessRows = guessesTbody.querySelectorAll('tr');
+    guessRows.forEach(row => {
+        const gridRow = document.createElement('div');
+        gridRow.className = 'win-grid-row';
+        const thumb = row.querySelector('.feedback-image').cloneNode(true);
+        thumb.className = 'win-grid-thumbnail';
+        const squaresContainer = document.createElement('div');
+        squaresContainer.className = 'win-grid-squares';
+        const cells = row.querySelectorAll('td');
+        for (let i = 2; i < cells.length; i++) {
+            const square = document.createElement('div');
+            square.className = 'win-grid-square';
+            square.classList.add(cells[i].dataset.resultClass || 'incorrect-cell');
+            squaresContainer.appendChild(square);
+        }
+        gridRow.append(thumb, squaresContainer);
+        gridContainer.appendChild(gridRow);
+    });
+
+    winModalOverlay.classList.add('visible');
+}
+function hideWinModal() {
+    winModalOverlay.classList.remove('visible');
 }
 function generateShareText() {
     const isChallenge = currentGameMode === 'daily' || currentDifficulty === 'challenge';
@@ -140,13 +168,13 @@ function generateShareText() {
         let rowGrid = '';
         row.querySelectorAll('td').forEach((cell, index) => {
             if (index < 2) return;
-            if (cell.classList.contains('correct-cell')) rowGrid += '🟩';
-            else if (cell.classList.contains('partial-cell')) rowGrid += '🟧';
-            else if(cell.classList.contains('incorrect-cell')) rowGrid += '🟥';
+            if (cell.dataset.resultClass === 'correct-cell') rowGrid += '🟩';
+            else if (cell.dataset.resultClass === 'partial-cell') rowGrid += '🟧';
+            else rowGrid += '🟥';
         });
         if(rowGrid) grid += rowGrid + '\n';
     });
-    return `${title}${isChallenge ? '' : ` (${currentDifficulty})`} - ${guessCountText}\n\n${grid}\nhttps://your-game-url.com`;
+    return `${title} (${currentDifficulty}) - ${guessCountText}\n\n${grid}\nhttps://your-game-url.com`;
 }
 async function handleShare() {
     const shareText = generateShareText();
@@ -171,57 +199,65 @@ function showFinalMessage(messageKey, character, isWin) {
     const bgKey = isWin ? 'green' : 'red';
     const bgClass = currentTheme === 'light-mode' ? `bg-${bgKey}-200` : `bg-${bgKey}-700`;
     const textClass = currentTheme === 'light-mode' ? `text-${bgKey}-800` : `text-${bgKey}-100`;
-    messageArea.className = `text-center text-xl font-bold p-4 rounded-md ${bgClass} ${textClass} flex flex-col items-center`;
-    messageArea.classList.add('pop-in');
+    messageArea.className = `text-center text-xl font-bold p-4 rounded-md ${bgClass} ${textClass} flex flex-col items-center pop-in`;
 }
-
 function appendGuessToTable(guessedChar, currentSecretChar) {
     const guessRow = document.createElement('tr');
-    const cells = [];
-    const headers = [
-        uiStrings[currentLanguage].thImage,
-        uiStrings[currentLanguage].thCharacter,
-        uiStrings[currentLanguage].thGender,
-        uiStrings[currentLanguage].thHairColor,
-        uiStrings[currentLanguage].thRace,
-        uiStrings[currentLanguage].thOriginPlanet,
-        uiStrings[currentLanguage].thSeries,
-        uiStrings[currentLanguage].thDebutSaga,
-        uiStrings[currentLanguage].thDebutYear,
-    ];
-
-    const imageCell = document.createElement('td');
-    imageCell.setAttribute('data-label', headers[0]);
+    const headers = [ uiStrings[currentLanguage].thImage, uiStrings[currentLanguage].thCharacter, uiStrings[currentLanguage].thGender, uiStrings[currentLanguage].thHairColor, uiStrings[currentLanguage].thRace, uiStrings[currentLanguage].thOriginPlanet, uiStrings[currentLanguage].thSeries, uiStrings[currentLanguage].thDebutSaga, uiStrings[currentLanguage].thDebutYear, ];
+    
+    const createCell = (frontContent, backContent, resultClass = '', arrow = '') => {
+        const cell = document.createElement('td');
+        cell.setAttribute('data-label', headers[guessRow.children.length]);
+        cell.dataset.resultClass = resultClass;
+        const cellInner = document.createElement('div');
+        cellInner.className = 'cell-inner';
+        const cellFront = document.createElement('div');
+        cellFront.className = 'cell-face cell-front';
+        cellFront.append(frontContent);
+        const cellBack = document.createElement('div');
+        cellBack.className = `cell-face cell-back ${resultClass}`;
+        const backContentNode = backContent.cloneNode(true);
+        if (arrow) {
+            const arrowSpan = document.createElement('span');
+            arrowSpan.className = 'arrow-indicator';
+            arrowSpan.innerHTML = arrow;
+            backContentNode.appendChild(arrowSpan);
+        }
+        cellBack.append(backContentNode);
+        cellInner.append(cellFront, cellBack);
+        cell.appendChild(cellInner);
+        return cell;
+    };
+    
     const imgElement = document.createElement('img');
     imgElement.src = guessedChar.image_url;
     imgElement.alt = guessedChar.name[currentLanguage] || guessedChar.name.es;
     imgElement.onerror = function() { this.src = 'https://placehold.co/100x100/cccccc/333333?text=?'; };
     imgElement.classList.add('feedback-image');
-    imageCell.appendChild(imgElement);
-    guessRow.appendChild(imageCell);
-    cells.push(imageCell);
+    guessRow.appendChild(createCell(imgElement.cloneNode(true), imgElement.cloneNode(true)));
     
-    const nameCell = document.createElement('td');
-    nameCell.setAttribute('data-label', headers[1]);
-    nameCell.textContent = guessedChar.name[currentLanguage] || guessedChar.name.es;
-    guessRow.appendChild(nameCell);
-    cells.push(nameCell);
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = guessedChar.name[currentLanguage] || guessedChar.name.es;
+    guessRow.appendChild(createCell(nameSpan.cloneNode(true), nameSpan.cloneNode(true)));
 
-    propertiesToCompare.forEach((propKey, index) => {
-        const cell = document.createElement('td');
-        cell.setAttribute('data-label', headers[index + 2]);
-        
-        const guessedValue = (propKey === 'debut_year') 
-            ? (guessedChar.debut_year || 'N/A') 
-            : (guessedChar[propKey]?.[currentLanguage] || guessedChar[propKey]?.es || 'N/A');
-        
-        cell.innerHTML = guessedValue;
-        cell.classList.add('neutral-text');
-        
+    propertiesToCompare.forEach((propKey) => {
+        const guessedValue = (propKey === 'debut_year') ? (guessedChar.debut_year || 'N/A') : (guessedChar[propKey]?.[currentLanguage] || 'N/A');
         let resultClass = 'incorrect-cell';
         let arrow = "";
-
-        if (propKey === 'debut_year') {
+        if (propKey === 'debut_saga') {
+            const comparisonGuessed = guessedChar[propKey]?.es || 'N/A_es';
+            const comparisonSecret = currentSecretChar[propKey]?.es || 'N/A_es';
+            if (comparisonGuessed.toLowerCase() === comparisonSecret.toLowerCase()) {
+                resultClass = 'correct-cell';
+            } else {
+                const guessedIndex = sagasOrder.indexOf(comparisonGuessed);
+                const secretIndex = sagasOrder.indexOf(comparisonSecret);
+                if (guessedIndex !== -1 && secretIndex !== -1) {
+                    if (secretIndex > guessedIndex) arrow = '▼';
+                    else arrow = '▲';
+                }
+            }
+        } else if (propKey === 'debut_year') {
             const secretValue = currentSecretChar.debut_year || 'N/A';
             if (guessedValue !== 'N/A' && secretValue !== 'N/A') {
                 if (guessedValue === secretValue) {
@@ -229,9 +265,8 @@ function appendGuessToTable(guessedChar, currentSecretChar) {
                 } else if (Math.abs(guessedValue - secretValue) <= 5) {
                     resultClass = 'partial-cell';
                 }
-                if (secretValue > guessedValue) arrow = ` <span class='arrow-indicator'>▲</span>`;
-                else if (secretValue < guessedValue) arrow = ` <span class='arrow-indicator'>▼</span>`;
-                cell.innerHTML += arrow;
+                if (secretValue > guessedValue) arrow = `▲`;
+                else if (secretValue < guessedValue) arrow = `▼`;
             }
         } else {
             const comparisonGuessed = guessedChar[propKey]?.es || 'N/A_es';
@@ -240,23 +275,20 @@ function appendGuessToTable(guessedChar, currentSecretChar) {
                 resultClass = 'correct-cell';
             }
         }
-        
-        cell.dataset.resultClass = resultClass;
-        guessRow.appendChild(cell);
-        cells.push(cell);
+        const contentSpan = document.createElement('span');
+        contentSpan.textContent = guessedValue;
+        guessRow.appendChild(createCell(contentSpan, contentSpan, resultClass, arrow));
     });
 
     guessesTbody.prepend(guessRow);
-    setTimeout(() => {
-        cells.forEach(cell => {
-            if (cell.dataset.resultClass) {
-                cell.classList.add(cell.dataset.resultClass);
-            }
-        });
-    }, 100);
+    const cellsToAnimate = guessRow.querySelectorAll('td');
+    cellsToAnimate.forEach((cell, index) => {
+        setTimeout(() => {
+            cell.classList.add('is-flipping');
+        }, index * 120);
+    });
     guessRow.scrollIntoView({ behavior: 'smooth', block: 'end' });
 }
-
 function populateFilteredOptions(filterText) {
     let filteredChars = [];
     if (filterText.length > 0) {
@@ -269,7 +301,7 @@ function populateFilteredOptions(filterText) {
     filteredOptionsList.innerHTML = '';
     filteredChars.forEach(character => {
         const optionDiv = document.createElement('div');
-        optionDiv.classList.add('filtered-option');
+        optionDiv.classList.add('filtered-option', 'tooltip-container');
         const img = document.createElement('img');
         img.src = character.image_url;
         img.alt = character.name[currentLanguage] || character.name.es;
@@ -277,9 +309,20 @@ function populateFilteredOptions(filterText) {
         img.onerror = function() { this.src = 'https://placehold.co/40x40/cccccc/333333?text=?'; };
         const nameSpan = document.createElement('span');
         nameSpan.className = 'filtered-option-name';
-        nameSpan.textContent = character.name[currentLanguage] || character.name.es;
+        const fullName = character.name[currentLanguage] || character.name.es;
+        nameSpan.textContent = fullName;
         optionDiv.appendChild(img);
         optionDiv.appendChild(nameSpan);
+        optionDiv.style.visibility = 'hidden';
+        document.body.appendChild(optionDiv);
+        if (nameSpan.scrollWidth > nameSpan.clientWidth) {
+            const tooltipSpan = document.createElement('span');
+            tooltipSpan.className = 'tooltip-text';
+            tooltipSpan.textContent = fullName;
+            optionDiv.appendChild(tooltipSpan);
+        }
+        document.body.removeChild(optionDiv);
+        optionDiv.style.visibility = 'visible';
         optionDiv.addEventListener('click', () => selectCharacter(character));
         filteredOptionsList.appendChild(optionDiv);
     });
@@ -301,7 +344,7 @@ function updateCountdown() {
     const diff = tomorrowUTC - now;
     if (diff <= 0) {
         dailyCountdownEl.textContent = "00:00:00";
-        setGameMode('daily'); 
+        location.reload();
         return;
     }
     const h = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
@@ -340,9 +383,11 @@ function resetUIForNewGame() {
 function prepareGame(mode) {
     resetUIForNewGame();
     if (mode === 'daily') {
-        difficultySelectorContainer.style.display = 'none';
+        difficultySelectorContainer.style.display = 'flex';
         dailyCountdownContainer.style.display = 'flex';
-        guessesRemainingContainer.style.display = 'block';
+        const isChallenge = currentDifficulty === 'challenge';
+        guessesRemainingContainer.style.display = isChallenge ? 'block' : 'none';
+
         const dailyState = loadDailyState();
         secretCharacter = dbCharacters.find(c => c.id === dailyState.characterId);
         guessesMade = dailyState.guesses.length;
@@ -352,7 +397,7 @@ function prepareGame(mode) {
             if (guessedChar) appendGuessToTable(guessedChar, secretCharacter);
         });
 
-        updateGuessesRemaining();
+        if (isChallenge) updateGuessesRemaining();
 
         if (dailyState.gameOver) {
             endGame(dailyState.won, false);
@@ -363,7 +408,10 @@ function prepareGame(mode) {
         }
     } else { // Infinite mode
         difficultySelectorContainer.style.display = 'flex';
-        if(currentDifficulty === 'challenge') updateGuessesRemaining();
+        if(currentDifficulty === 'challenge') {
+            guessesRemainingContainer.style.display = 'block';
+            updateGuessesRemaining();
+        }
         secretCharacter = dbCharacters[Math.floor(Math.random() * dbCharacters.length)];
     }
 }
@@ -404,16 +452,16 @@ function handleGuess() {
 }
 
 function winGame() {
-    let messageKey = 'winMessage';
     if (currentGameMode === 'daily') {
         const dailyState = loadDailyState();
         dailyState.won = true;
         dailyState.gameOver = true;
         saveDailyState(dailyState);
-        updateStats(true, guessesMade);
-        messageKey = 'dailyChallengeCompleted';
+        if (currentDifficulty === 'challenge') {
+            updateStats(true, guessesMade);
+        }
     }
-    endGame(true, true, messageKey);
+    endGame(true, true);
 }
 
 function loseGame() {
@@ -421,9 +469,11 @@ function loseGame() {
         const dailyState = loadDailyState();
         dailyState.gameOver = true;
         saveDailyState(dailyState);
-        updateStats(false, guessesMade);
+        if (currentDifficulty === 'challenge') {
+            updateStats(false, guessesMade);
+        }
     }
-    endGame(false, true, 'loseMessage');
+    endGame(false, true);
 }
 
 function endGame(isWin, showAnimation) {
@@ -432,14 +482,15 @@ function endGame(isWin, showAnimation) {
     characterSearchInput.disabled = true;
     guessButtonEl.disabled = true;
     
-    const messageKey = isWin ? 
-        (currentGameMode === 'daily' ? 'dailyChallengeCompleted' : 'winMessage') : 
-        'loseMessage';
+    const messageKey = isWin 
+        ? (currentGameMode === 'daily' ? 'dailyChallengeCompleted' : 'winMessage') 
+        : 'loseMessage';
     
     const displayLogic = () => {
         showFinalMessage(messageKey, secretCharacter, isWin);
         playAgainButtonEl.style.display = currentGameMode === 'infinite' ? 'flex' : 'none';
         postGameContainer.style.display = 'flex';
+        
         if (isWin) {
             showWinModal();
         }
@@ -547,6 +598,13 @@ function initialize() {
             hideStatsModal();
         }
     });
+    winCloseButton.addEventListener('click', hideWinModal);
+    winModalOverlay.addEventListener('click', (e) => {
+        if (e.target === winModalOverlay) {
+            hideWinModal();
+        }
+    });
+    winShareButton.addEventListener('click', handleShare);
     
     characterSearchInput.addEventListener('focus', () => {
         if (!characterSearchInput.disabled) {
