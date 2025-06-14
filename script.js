@@ -6,7 +6,17 @@ const propertiesToCompare = ["gender", "hair_color", "race", "origin_planet", "s
 const sagasOrder = [ "Saga de Pilaf", "Saga del 21º Torneo Mundial", "Saga de la Red Ribbon", "Saga del 22º Torneo Mundial", "Saga de Piccolo Daimaō", "Saga de Piccolo Jr.", "Saga Saiyan", "Saga de Namek", "Saga de Garlic Jr.", "Saga de los Androides", "Saga de Cell", "Película: El Último Combate", "Película: El Árbol del Poder", "Película: El Super Guerrero Son Goku", "Película: Los Rivales Más Poderosos", "Película: Guerreros de Fuerza Ilimitada", "Película: El Poder Invencible", "Película: Los Guerreros de Plata", "Saga de Majin Buu", "Película: ¡El Renacer de la Fusión! Goku y Vegeta", "Película: El Ataque del Dragón", "Saga del Fin de Z", "Saga de las Bolas de Dragón Negras", "Saga de Baby", "Saga de Super Androide 17", "Saga de los Dragones Oscuros", "Saga de la Batalla de los Dioses", "Saga de la Resurrección de Freezer", "Saga del Universo 6", "Saga de Trunks del Futuro (Super)", "Saga de Supervivencia Universal", "Película: Dragon Ball Super: Broly" ];
 
 // --- Game State ---
-let secretCharacter; let gameOver; let guessesMade; let gameStarted = false; let currentLanguage = 'es'; let currentTheme = 'dark-mode'; let currentGameMode = 'infinite'; let currentDifficulty = 'normal'; let countdownInterval; let selectedCharacterForGuess = null; let stats; 
+let secretCharacter;
+let gameOver;
+let guessesMade;
+let gameStarted = false;
+let currentLanguage = 'es';
+let currentTheme = 'dark-mode';
+let currentGameMode = 'infinite';
+let currentDifficulty = 'normal';
+let countdownInterval;
+let selectedCharacterForGuess = null;
+let stats; 
 
 // --- UI STRINGS ---
 const uiStrings = {
@@ -457,6 +467,7 @@ function winGame() {
         dailyState.won = true;
         dailyState.gameOver = true;
         saveDailyState(dailyState);
+        // Only update official stats if it's a challenge
         if (currentDifficulty === 'challenge') {
             updateStats(true, guessesMade);
         }
@@ -635,8 +646,4 @@ function initialize() {
     shareButtonEl.addEventListener('click', handleShare);
 }
 
-<<<<<<< HEAD
 document.addEventListener('DOMContentLoaded', initialize);
-=======
-document.addEventListener('DOMContentLoaded', initialize);
->>>>>>> 0d27aac (Move all files to root directory for GitHub Pages)
