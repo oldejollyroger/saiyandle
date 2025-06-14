@@ -363,7 +363,7 @@ function updateCountdown() {
     dailyCountdownEl.textContent = `${h}:${m}:${s}`;
 }
 function updateGuessesRemaining() {
-    const isChallenge = (currentGameMode === 'daily' || currentDifficulty === 'challenge');
+    const isChallenge = (currentGameMode === 'daily' && currentDifficulty === 'challenge') || (currentGameMode === 'infinite' && currentDifficulty === 'challenge');
     if (isChallenge) {
         const remaining = CHALLENGE_MAX_GUESSES - guessesMade;
         guessesRemainingDisplay.textContent = remaining;
@@ -452,7 +452,7 @@ function handleGuess() {
     
     if (selectedCharacterForGuess.id === secretCharacter.id) {
         winGame();
-    } else if ((currentGameMode === 'daily' || currentDifficulty === 'challenge') && guessesMade >= CHALLENGE_MAX_GUESSES) {
+    } else if (currentDifficulty === 'challenge' && guessesMade >= CHALLENGE_MAX_GUESSES) {
         loseGame();
     }
     
@@ -467,7 +467,6 @@ function winGame() {
         dailyState.won = true;
         dailyState.gameOver = true;
         saveDailyState(dailyState);
-        // Only update official stats if it's a challenge
         if (currentDifficulty === 'challenge') {
             updateStats(true, guessesMade);
         }
