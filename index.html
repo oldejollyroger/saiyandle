@@ -1,141 +1,60 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">Saiyandle</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>Saiyandle - The Dragon Ball Guessing Game</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
 </head>
-<body class="flex flex-col items-center min-h-screen justify-center p-4"> 
-
-    <div class="w-full max-w-4xl mb-4 flex flex-col items-center gap-4 p-2 rounded-md">
-        <!-- Controls Header -->
-        <div class="flex justify-center items-center gap-2 sm:gap-4">
-            <div id="language-selector" class="flex gap-1 sm:gap-2">
-                <button class="lang-button control-button" data-lang="es">ES</button>
-                <button class="lang-button control-button" data-lang="en">EN</button>
-                <button class="lang-button control-button" data-lang="ca">CA</button>
-            </div>
-            <div class="tooltip-container">
-                <button id="theme-toggle" class="control-button theme-toggle-button">
-                    <span id="theme-icon"></span> 
-                </button>
-                <span id="theme-tooltip" class="tooltip-text"></span>
-            </div>
-            <button id="stats-button" class="control-button stats-button">📊</button>
-            <div class="dropdown">
-                <button id="game-mode-button" class="control-button flex items-center gap-1">
-                    <span id="current-mode-text"></span> <span class="text-xs">▼</span>
-                </button>
-                <div id="game-mode-dropdown" class="dropdown-content">
-                    <button data-mode="daily" data-lang-key="modeDaily">Modo Diario</button>
-                    <button data-mode="infinite" data-lang-key="modeInfinite">Modo Infinito</button>
-                </div>
-            </div>
-        </div>
-        
-        <div id="difficulty-selector-container" class="flex gap-2 p-1 rounded-lg">
-             <button class="difficulty-button control-button" data-difficulty="normal" data-lang-key="difficultyNormal">Normal</button>
-             <button class="difficulty-button control-button" data-difficulty="challenge" data-lang-key="difficultyChallenge">Desafío</button>
-        </div>
-        
-        <div class="flex gap-4 items-center text-center">
-            <div id="daily-countdown-container" class="items-center gap-2" style="display: none;">
-                <span data-lang-key="nextChallengeIn">Próximo desafío en:</span> <span id="daily-countdown"></span>
-            </div>
-            <div id="guesses-remaining-container" style="display: none;">
-                <span id="guesses-remaining-text" data-lang-key="attemptsRemaining">Intentos restantes:</span> <span id="guesses-remaining-display"></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="game-container p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-4xl">
-        <header class="text-center mb-6">
-            <h1 class="text-3xl sm:text-4xl font-bold text-orange-500">Saiyandle</h1>
-            <p id="headerSubtitle" class="mt-2 text-gray-400" data-lang-key="headerSubtitle">Adivina el personaje secreto de Dragon Ball.</p>
+<body>
+    <div id="game-body">
+        <header>
+            <h1>Saiyandle</h1>
+            <p class="subtitle">Guess the Dragon Ball Character!</p>
         </header>
-        <div id="game-area" class="space-y-6 flex flex-col items-center">
-            <div class="search-container">
-                <div class="flex flex-col sm:flex-row items-center gap-3 p-4 rounded-lg w-full"> 
-                    <label id="guessLabel" data-lang-key="guessLabel" class="font-semibold whitespace-nowrap">Elige un personaje:</label>
-                    <div class="relative flex-grow w-full sm:w-auto">
-                        <input type="text" id="character-search-input" class="w-full p-3 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500" autocomplete="off">
-                        <div id="filtered-options-list" class="absolute z-10 mt-1 w-full rounded-md shadow-lg max-h-60 overflow-y-auto hidden border"></div>
+
+        <main>
+            <div id="game-container">
+                <div id="input-area">
+                    <div class="autocomplete-container">
+                        <input type="text" id="guess-input" placeholder="Enter Character name..." autocomplete="off">
                     </div>
-                    <button id="guessButton" class="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-md shadow-md" data-lang-key="guessButton">Adivinar</button>
+                    <button id="submit-guess">Scan</button>
+                </div>
+    
+                <div id="guesses-grid">
+                    <!-- Updated Grid Headers for Saiyandle -->
+                    <div class="grid-header">
+                        <div class="grid-cell">Character</div>
+                        <div class="grid-cell">Race</div>
+                        <div class="grid-cell">First Saga</div>
+                        <div class="grid-cell">Allegiance</div>
+                        <div class="grid-cell">Power Tier</div>
+                        <div class="grid-cell">Has Tail?</div>
+                    </div>
+                    <div id="grid-body">
+                        <!-- Guess rows will be inserted here -->
+                    </div>
                 </div>
             </div>
-            <div id="feedback-grid-container" class="w-full">
-                <table class="feedback-grid"> 
-                    <thead>
-                        <tr>
-                            <th data-lang-key="thImage">Imagen</th>
-                            <th data-lang-key="thCharacter">Personaje</th>
-                            <th data-lang-key="thGender">Género</th>
-                            <th data-lang-key="thHairColor">Color de Pelo</th>
-                            <th data-lang-key="thRace">Raza</th>
-                            <th data-lang-key="thOriginPlanet">Planeta de Origen</th>
-                            <th data-lang-key="thSeries">Serie</th>
-                            <th data-lang-key="thDebutSaga">Saga de Debut</th>
-                            <th data-lang-key="thDebutYear">Año de Debut</th>
-                        </tr>
-                    </thead>
-                    <tbody id="guesses-tbody"></tbody>
-                </table>
-            </div>
-            <div id="message-area" class="text-center text-xl font-bold p-4 rounded-md flex flex-col items-center" aria-live="polite"></div>
-            <div id="post-game-container" class="text-center flex items-center gap-4" style="display: none;">
-                <button id="playAgainButton" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-md shadow-md" data-lang-key="playAgainButton">Jugar de Nuevo</button>
-                <button id="shareButton" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-md shadow-md" data-lang-key="shareButton">Compartir</button>
-            </div>
-        </div>
+        </main>
     </div>
 
-    <footer class="text-center mt-8 text-sm text-gray-500">
-        <p id="footerText" data-lang-key="footerText">© 2024 Saiyandle. Inspirado en Wordle.</p>
-    </footer>
-
-    <!-- Stats Modal -->
-    <div id="stats-modal-overlay" class="stats-modal-overlay">
-        <div id="stats-modal" class="stats-modal">
-            <button id="stats-close-button" class="modal-close-button">×</button>
-            <h2 id="stats-title" class="stats-title" data-lang-key="statsTitle">Estadísticas</h2>
-            <div class="stats-grid">
-                <div><div id="stats-played" class="stats-number">0</div><div class="stats-label" data-lang-key="statsPlayed">Jugadas</div></div>
-                <div><div id="stats-win-percentage" class="stats-number">0</div><div class="stats-label" data-lang-key="statsWinPercentage">% Victorias</div></div>
-                <div><div id="stats-current-streak" class="stats-number">0</div><div class="stats-label" data-lang-key="statsCurrentStreak">Racha Actual</div></div>
-                <div><div id="stats-max-streak" class="stats-number">0</div><div class="stats-label" data-lang-key="statsMaxStreak">Mejor Racha</div></div>
-            </div>
-            <h3 class="distribution-title" data-lang-key="statsDistribution">Distribución de Adivinanzas</h3>
-            <div id="stats-distribution-container" class="distribution-container"></div>
+    <div id="game-over-modal" class="modal-hidden">
+        <div class="modal-content">
+            <img id="winner-image" src="" alt="Winning Character">
+            <p id="game-over-message"></p>
+            <button id="play-again-button">Train Again</button>
         </div>
     </div>
     
-    <!-- Win Modal -->
-    <div id="win-modal-overlay" class="win-modal-overlay">
-        <div class="win-modal">
-            <button id="win-close-button" class="modal-close-button">×</button>
-            <h2 id="win-title" class="win-title" data-lang-key="winTitle">¡Felicidades!</h2>
-            <div class="win-summary">
-                <img id="win-char-image" src="" alt="Personaje Ganador" class="win-char-image">
-                <div class="win-details">
-                    <h3 id="win-char-name" class="win-char-name"></h3>
-                    <div id="win-tries-box" class="win-tries-box">
-                        <span id="win-tries-text"></span>
-                    </div>
-                </div>
-            </div>
-            <div id="win-grid-container" class="win-grid-container"></div>
-            <div class="win-buttons">
-                <button id="win-share-button" class="win-share-button" data-lang-key="shareButton">Compartir</button>
-            </div>
-        </div>
-    </div>
+    <div id="suggestions-box"></div>
 
-    <script src="characters.js"></script>
-    <script src="script.js" defer></script>
+    <!-- IMPORTANT: Make sure this points to your new Saiyan data file -->
+    <script src="./saiyan_data.js"></script>
+    <script src="./script.js"></script>
 </body>
 </html>
