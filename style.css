@@ -1,242 +1,88 @@
-:root {
-    /* Dragon Ball Theme Palette */
-    --bg-color: #1a1a1b;
-    --text-color: #f8f8f8;
-    --border-color: #3a3a3c;
-    --input-bg: #272729;
-    --correct: #538d4e;
-    --incorrect: #3a3a3c;
-    --theme-orange: #FF9900;
-    --theme-blue: #0073e6;
-    --font-pixel: 'Press Start 2P', cursive;
-    --font-main: 'Roboto Mono', monospace;
+/* Find a font named "Saiyan Sans" online or use a different one you like */
+@font-face {
+    font-family: 'Saiyan-Sans';
+    src: url('path-to-your/Saiyan-Sans.ttf') format('truetype');
 }
 
-/* --- GLOBAL STYLES --- */
 body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    font-family: var(--font-main);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    margin: 0;
-    padding: 2rem 1rem;
-    min-height: 100vh;
-    box-sizing: border-box;
-}
-
-#game-body {
-    width: 100%;
-    max-width: 900px;
-}
-
-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-h1 {
-    font-family: var(--font-pixel);
-    font-size: clamp(2rem, 6vw, 3rem);
-    color: var(--theme-orange);
-    text-shadow: 3px 3px 0 var(--theme-blue);
-    margin: 0;
-}
-
-.subtitle {
-    font-size: 1rem;
-    color: #ccc;
-    margin-top: 0.5rem;
-}
-
-main {
-    width: 100%;
-}
-
-#input-area {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 1.5rem;
-    align-items: center;
-}
-
-.autocomplete-container {
-    position: static;
-    flex-grow: 1;
-}
-
-#guess-input {
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-    background-color: var(--input-bg);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-#suggestions-box {
-    position: fixed;
-    display: none;
-    max-height: 60vh;
-    overflow-y: auto;
-    z-index: 1000;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-    background: var(--input-bg);
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-}
-
-.suggestion-item {
-    padding: 8px 12px;
-    cursor: pointer;
-    text-transform: capitalize;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.suggestion-item:hover {
-    background-color: #444;
-}
-
-.suggestion-item img, .character-cell img {
-    width: 50px;
-    height: 50px;
-    object-fit: cover; /* Prevents images from being stretched */
-    border-radius: 50%;
-    background-color: #555;
-    border: 2px solid var(--theme-blue);
-}
-
-#submit-guess {
-    padding: 12px 20px;
-    font-size: 1rem;
-    font-weight: bold;
-    background-color: var(--theme-blue);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: filter 0.2s ease-out;
-}
-
-#submit-guess:hover {
-    filter: brightness(1.1);
-}
-
-#guesses-grid {
+    font-family: 'Saiyan-Sans', Arial, sans-serif;
+    background-color: #0d1b2a;
+    color: #ffffff;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    align-items: center;
+    justify-content: space-between;
+    height: 100vh;
+    margin: 0;
 }
 
-/* Updated for 6 columns */
-.grid-header, .grid-row {
+header h1 {
+    font-size: 3rem;
+    color: #ff9900; /* Orange */
+    border-bottom: 3px solid #003366; /* Blue */
+    padding-bottom: 10px;
+    letter-spacing: 5px;
+}
+
+#game-board {
     display: grid;
-    grid-template-columns: 2fr repeat(5, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 5px;
-    text-align: center;
+    margin-bottom: 20px;
 }
 
-.grid-row {
-    align-items: stretch;
-}
-
-.grid-header .grid-cell {
+.tile {
+    width: 60px;
+    height: 60px;
+    border: 2px solid #3a3a3c;
+    font-size: 2.5rem;
     font-weight: bold;
-    font-size: 0.8rem;
-    padding: 5px;
-}
-
-.grid-cell {
-    background-color: var(--incorrect);
-    border-radius: 4px;
-    padding: 0.5rem;
+    text-transform: uppercase;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: clamp(0.7rem, 2.5vw, 0.9rem);
-    font-weight: 500;
-    text-transform: capitalize;
-    min-height: 80px;
-    overflow-wrap: break-word;
+    color: white;
 }
 
-.grid-cell.correct {
-    background-color: var(--correct);
+/* Tile color states */
+.tile.correct {
+    background-color: #00c853; /* Green */
+    border-color: #00c853;
+}
+.tile.present {
+    background-color: #ffc107; /* Yellow */
+    border-color: #ffc107;
+}
+.tile.absent {
+    background-color: #3a3a3c; /* Dark Grey */
+    border-color: #3a3a3c;
 }
 
-.grid-cell span {
-    margin: 0 5px;
-}
-
-.character-cell {
+#keyboard-container {
+    display: flex;
     flex-direction: column;
     gap: 5px;
-    padding: 10px 5px;
-    font-size: 0.8em;
 }
 
-.character-cell img {
-    width: 64px;
-    height: 64px;
-}
-
-#game-over-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+.keyboard-row {
     display: flex;
     justify-content: center;
-    align-items: center;
-    z-index: 100;
+    gap: 5px;
 }
 
-.modal-hidden {
-    display: none !important;
-}
-
-.modal-content {
-    background-color: #2c2c2d;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-    border: 3px solid var(--theme-orange);
-}
-
-#game-over-message {
-    margin: 10px 0 20px 0;
-    font-size: 1.2rem;
-}
-
-#game-over-message strong {
-    color: var(--theme-orange);
-    text-transform: capitalize;
-}
-
-#play-again-button {
-    background-color: var(--theme-blue);
-    color: var(--text-color);
-    border: none;
-    padding: 12px 25px;
+.key {
+    font-family: inherit;
     font-size: 1rem;
     font-weight: bold;
-    border-radius: 5px;
+    padding: 15px 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #818384;
+    color: white;
     cursor: pointer;
+    text-transform: uppercase;
 }
 
-#winner-image {
-    width: 180px;
-    height: 180px;
-    margin-bottom: 1rem;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 4px solid var(--theme-orange);
+.key.large {
+    padding: 15px 20px;
 }

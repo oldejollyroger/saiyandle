@@ -3,58 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saiyandle - The Dragon Ball Guessing Game</title>
-    <link rel="stylesheet" href="./style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <title>Saiyandle</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Saiyan-Sans&display=swap" rel="stylesheet"> <!-- A fitting font! -->
 </head>
 <body>
-    <div id="game-body">
-        <header>
-            <h1>Saiyandle</h1>
-            <p class="subtitle">Guess the Dragon Ball Character!</p>
-        </header>
+    <header>
+        <h1>SAIYANDLE</h1>
+    </header>
 
-        <main>
-            <div id="game-container">
-                <div id="input-area">
-                    <div class="autocomplete-container">
-                        <input type="text" id="guess-input" placeholder="Enter Character name..." autocomplete="off">
-                    </div>
-                    <button id="submit-guess">Scan</button>
-                </div>
-    
-                <div id="guesses-grid">
-                    <!-- Updated Grid Headers for Saiyandle -->
-                    <div class="grid-header">
-                        <div class="grid-cell">Character</div>
-                        <div class="grid-cell">Race</div>
-                        <div class="grid-cell">First Saga</div>
-                        <div class="grid-cell">Allegiance</div>
-                        <div class="grid-cell">Power Tier</div>
-                        <div class="grid-cell">Has Tail?</div>
-                    </div>
-                    <div id="grid-body">
-                        <!-- Guess rows will be inserted here -->
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
+    <main>
+        <div id="game-board"></div>
+        <div id="keyboard-container"></div>
+    </main>
 
-    <div id="game-over-modal" class="modal-hidden">
-        <div class="modal-content">
-            <img id="winner-image" src="" alt="Winning Character">
-            <p id="game-over-message"></p>
-            <button id="play-again-button">Train Again</button>
-        </div>
-    </div>
-    
-    <div id="suggestions-box"></div>
-
-    <!-- IMPORTANT: Make sure this points to your new Saiyan data file -->
-    <script src="./saiyan_data.js"></script>
-    <script src="./script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
